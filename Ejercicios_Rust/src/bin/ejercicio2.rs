@@ -8,6 +8,7 @@
 use crossterm::{
     cursor::{MoveTo, MoveToNextLine},
     execute,
+    style::Print,
     terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode},
 };
 use std::{
@@ -24,9 +25,14 @@ fn main() -> Result<()> {
     execute!(stdout, Clear(ClearType::All))?;
     execute!(stdout, MoveTo(0, 0))?;
 
-    for i in 1..=2 {
+    for _ in 1..=2 {
         for letter in 'A'..='Z' {
-            print!("{}", letter);
+            //Option 1
+            //print!("{letter}");
+
+            //Option 2
+            execute!(stdout, Print(letter))?;
+
             stdout.flush()?;
         }
 
