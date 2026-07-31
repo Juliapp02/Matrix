@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["execute",1],["queue",1]],"mod":["cursor","event","style","terminal","tty"],"trait":["Command","ExecutableCommand","QueueableCommand","SynchronizedUpdate"]};

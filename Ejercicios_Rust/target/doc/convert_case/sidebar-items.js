@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Boundary","Case","Pattern"],"fn":["split"],"macro":[["case",1],["ccase",1],["delim_boundary",1]],"struct":["Converter","StateConverter"],"trait":["Casing"]};
