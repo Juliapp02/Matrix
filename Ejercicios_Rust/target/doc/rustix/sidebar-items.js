@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":[["cstr",1]],"mod":["buffer","fd","ffi","io","ioctl","not_implemented","stdio","termios"]};
