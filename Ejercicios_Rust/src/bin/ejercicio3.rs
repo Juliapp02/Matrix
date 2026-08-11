@@ -5,12 +5,10 @@
 *       3. Initialize array.
 *       4. Print array in one line, move to next line, delete previous
 *          one and print the array again.
+*       5. Print in Green.
+*       6. Event with poll and read for terminating execution.
 *
-*
-*
-*       Las letras en verde
-*
-* */
+**/
 
 use std::{
     io::{Result, Write, stdout},
