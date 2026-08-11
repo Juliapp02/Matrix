@@ -14,7 +14,7 @@ use std::{
 };
 
 use crossterm::{
-    cursor::{Hide, MoveTo, MoveToNextLine, RestorePosition, SavePosition},
+    cursor::{Hide, MoveTo, MoveToNextLine},
     event::{Event, KeyCode, poll, read},
     execute,
     terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode, size},
@@ -22,12 +22,13 @@ use crossterm::{
 
 use rand::{Rng, thread_rng};
 
+#[derive(PartialEq, Eq)]
 enum Color {
     Green,
     White,
 }
 
-fn print_line(num_col: usize, color: Color, cols_printed: Vec<bool>) {
+fn print_line(num_col: usize, color: Color, cols_printed: &[bool]) {
     let mut stdout = stdout();
 
     for i in 1..num_col {
@@ -56,6 +57,7 @@ fn main() -> Result<()> {
     let mut row_count = 1;
     let mut rng = thread_rng();
 
+    execute!(stdout, Hide)?;
     execute!(stdout, Clear(ClearType::All))?;
     execute!(stdout, MoveTo(0, 0))?;
 
@@ -64,89 +66,26 @@ fn main() -> Result<()> {
     }
 
     for _ in 1..=n_row {
-        for i in 1..n_col {
-            if cols_printed[i] {
-                let c = rng.gen_range(65..=90) as u8;
-                print!("\x1b[38;5;40m{}", c as char);
-                stdout.flush()?;
-            } else {
-                print!("{}", ' ');
-                stdout.flush()?;
-            }
-        }
+        print_line(n_col, Color::Green, &cols_printed);
 
         if row_count == 2 {
             execute!(stdout, MoveTo(0, row_count - 2))?;
-            execute!(stdout, Clear(ClearType::All));
+            execute!(stdout, Clear(ClearType::All))?;
 
-            for i in 1..n_col {
-                if cols_printed[i] {
-                    let c = rng.gen_range(65..=90) as u8;
-                    print!("\x1b[38;5;15m{}", c as char);
-                    stdout.flush()?;
-                } else {
-                    print!("{}", ' ');
-                    stdout.flush()?;
-                }
-            }
-
+            print_line(n_col, Color::White, &cols_printed);
             execute!(stdout, MoveToNextLine(1))?;
-
-            for i in 1..n_col {
-                if cols_printed[i] {
-                    let c = rng.gen_range(65..=90) as u8;
-                    print!("\x1b[38;5;40m{}", c as char);
-                    stdout.flush()?;
-                } else {
-                    print!("{}", ' ');
-                    stdout.flush()?;
-                }
-            }
-
-            //execute!(stdout, MoveTo(n_col as u16, row_count as u16))?;
+            print_line(n_col, Color::Green, &cols_printed);
         }
 
         if row_count >= 3 {
             execute!(stdout, MoveTo(0, row_count - 3))?;
             execute!(stdout, Clear(ClearType::All))?;
-            //execute!(stdout, Clear(ClearType::FromCursorUp))?;
 
-            for i in 1..n_col {
-                if cols_printed[i] {
-                    let c = rng.gen_range(65..=90) as u8;
-                    print!("\x1b[38;5;15m{}", c as char);
-                    stdout.flush()?;
-                } else {
-                    print!("{}", ' ');
-                    stdout.flush()?;
-                }
-            }
-
+            print_line(n_col, Color::White, &cols_printed);
             execute!(stdout, MoveToNextLine(1))?;
-
-            for i in 1..n_col {
-                if cols_printed[i] {
-                    let c = rng.gen_range(65..=90) as u8;
-                    print!("\x1b[38;5;15m{}", c as char);
-                    stdout.flush()?;
-                } else {
-                    print!("{}", ' ');
-                    stdout.flush()?;
-                }
-            }
-
+            print_line(n_col, Color::White, &cols_printed);
             execute!(stdout, MoveToNextLine(1))?;
-
-            for i in 1..n_col {
-                if cols_printed[i] {
-                    let c = rng.gen_range(65..=90) as u8;
-                    print!("\x1b[38;5;40m{}", c as char);
-                    stdout.flush()?;
-                } else {
-                    print!("{}", ' ');
-                    stdout.flush()?;
-                }
-            }
+            print_line(n_col, Color::Green, &cols_printed);
         }
 
         execute!(stdout, MoveToNextLine(1))?;
