@@ -28,11 +28,13 @@ enum Color {
     White,
 }
 
-fn print_line(num_col: usize, color: Color, cols_printed: &[bool]) {
+// fn print_line(color: Color, cols_printed: &[bool]) -> Result para uqe puedas procesar los .flush
+// y propagarlos{
+fn print_line(color: Color, cols_printed: &[bool]) {
     let mut stdout = stdout();
 
-    for i in 1..num_col {
-        if cols_printed[i] {
+    for &c in cols_printed {
+        if c {
             let c = thread_rng().gen_range(65..=90) as u8;
             if color == Color::White {
                 print!("\x1b[38;5;15m{}", c as char);
@@ -54,7 +56,7 @@ fn main() -> Result<()> {
     let n_row = size().unwrap().1 as usize;
     let mut cols_printed = vec![false; n_col];
     let mut stdout = stdout();
-    let mut row_count = 1;
+    let mut previous_row = 0;
     let mut rng = thread_rng();
 
     execute!(stdout, Hide)?;
@@ -65,30 +67,19 @@ fn main() -> Result<()> {
         *t = rng.gen_bool(0.5);
     }
 
-    for _ in 1..=n_row {
-        print_line(n_col, Color::Green, &cols_printed);
+    for r in 1..=n_row {
+        execute!(stdout, MoveTo(0, r as u16))?;
+        print_line(Color::Green, &cols_printed);
 
-        if row_count == 2 {
-            execute!(stdout, MoveTo(0, row_count - 2))?;
-            execute!(stdout, Clear(ClearType::All))?;
-
-            print_line(n_col, Color::White, &cols_printed);
-            execute!(stdout, MoveToNextLine(1))?;
-            print_line(n_col, Color::Green, &cols_printed);
+        if previous_row != 0 {
+            execute!(stdout, MoveTo(0, previous_row))?;
+            print_line(Color::White, &cols_printed);
         }
 
-        if row_count >= 3 {
-            execute!(stdout, MoveTo(0, row_count - 3))?;
-            execute!(stdout, Clear(ClearType::All))?;
-
-            print_line(n_col, Color::White, &cols_printed);
-            execute!(stdout, MoveToNextLine(1))?;
-            print_line(n_col, Color::White, &cols_printed);
-            execute!(stdout, MoveToNextLine(1))?;
-            print_line(n_col, Color::Green, &cols_printed);
+        if previous_row > 1 {
+            execute!(stdout, MoveTo(0, previous_row - 2))?;
+            execute!(stdout, Clear(ClearType::CurrentLine))?;
         }
-
-        execute!(stdout, MoveToNextLine(1))?;
 
         if poll(Duration::from_millis(50))?
             && let Event::Key(event) = read()?
@@ -98,7 +89,7 @@ fn main() -> Result<()> {
         }
 
         sleep(Duration::from_millis(500));
-        row_count += 1;
+        previous_row = r as u16;
     }
 
     sleep(Duration::from_millis(50));
