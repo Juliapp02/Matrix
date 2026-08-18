@@ -1,9 +1,8 @@
 /*
 *   Exercise 4*
 *       1. Every 3 horizontal lines, delete the first one printed.
-*       2. At the beginning, decide randomly (0.5% probability) which rows are going
-*          to have info printed in them. (the rows always print
-*          the vector with random characters).
+*       2. At the beginning, decide randomly (0.5% probability) which columns are going
+*          to have info printed in them.
 *       3. When printing a row, reprint the previous one in White.
 **/
 
@@ -14,7 +13,7 @@ use std::{
 };
 
 use crossterm::{
-    cursor::{Hide, MoveTo, MoveToNextLine},
+    cursor::{Hide, MoveTo},
     event::{Event, KeyCode, poll, read},
     execute,
     terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode, size},
@@ -28,9 +27,7 @@ enum Color {
     White,
 }
 
-// fn print_line(color: Color, cols_printed: &[bool]) -> Result para uqe puedas procesar los .flush
-// y propagarlos{
-fn print_line(color: Color, cols_printed: &[bool]) {
+fn print_line(color: Color, cols_printed: &[bool]) -> Result<()> {
     let mut stdout = stdout();
 
     for &c in cols_printed {
@@ -41,12 +38,13 @@ fn print_line(color: Color, cols_printed: &[bool]) {
             } else {
                 print!("\x1b[38;5;40m{}", c as char);
             }
-            stdout.flush();
+            stdout.flush()?;
         } else {
-            print!("{}", ' ');
-            stdout.flush();
+            print!(" ");
+            stdout.flush()?;
         }
     }
+    Ok(())
 }
 
 fn main() -> Result<()> {
@@ -69,11 +67,11 @@ fn main() -> Result<()> {
 
     for r in 1..=n_row {
         execute!(stdout, MoveTo(0, r as u16))?;
-        print_line(Color::Green, &cols_printed);
+        print_line(Color::Green, &cols_printed)?;
 
         if previous_row != 0 {
             execute!(stdout, MoveTo(0, previous_row))?;
-            print_line(Color::White, &cols_printed);
+            print_line(Color::White, &cols_printed)?;
         }
 
         if previous_row > 1 {

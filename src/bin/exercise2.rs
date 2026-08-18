@@ -1,8 +1,8 @@
 /*
 *   Ejercicio 2:
-*       1. Raw mode.
-*       2. Imprimir abecedario seguido.
-*       3. Borrar lo imprimido.
+*       1. Enable raw mode.
+*       2. Print the alphabet in a line (x2).
+*       3. Disable raw mode.
 * */
 
 use crossterm::{
